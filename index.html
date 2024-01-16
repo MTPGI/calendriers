@@ -147,20 +147,40 @@
 				displayText(`ERREUR lors du chargement du calendrier de ${cal_name} 😢`,"tc_error")
 				console.log("ERROR", status)
 			}
-			function getHttp(url, callback, err = console.error) {
-				const request = new XMLHttpRequest();
-				request.open("GET", url, true);
-				request.onerror = () => err(request);
-				request.onload = () => {
-					if (200 <= request.status && 400 > request.status) {
-						callback &&	callback(request.responseText);
-					} else if (errorCallback) {
-						errorCallback(request.status);
+			function getHttp(url, callback, errorCallback = console.error, expirationInDays = 1) {
+				var currentDate = new Date().toISOString().split('T')[0],
+					storedDataKey = `${url}-${currentDate}`,
+					storedTimestampKey = `${url}-timestamp`,
+					storedData = localStorage.getItem(storedDataKey),
+					storedTimestamp = localStorage.getItem(storedTimestampKey);
+				if (storedData && storedTimestamp) {
+					var expirationDate = new Date(storedTimestamp);
+					expirationDate.setDate(expirationDate.getDate() + expirationInDays);
+					if (expirationDate > new Date()) {
+						callback && callback(storedData);
+						return Promise.resolve(storedData);
 					}
 				}
-				request.send();
+				var request = new XMLHttpRequest();
+				request.open("GET", url, true);
+				request.onerror = () => { errorCallback(request) }
+				return new Promise((resolve, reject) => {
+					request.onload = () => {
+					  if (200 <= request.status && request.status < 400) {
+						var responseData = request.responseText;
+						localStorage.setItem(storedDataKey, responseData);
+						localStorage.setItem(storedTimestampKey, new Date().toISOString());
+						callback && callback(responseData);
+						resolve(responseData);
+					  } else {
+						errorCallback(request);
+						reject(request.status);
+					  }
+					}
+					request.send();
+				});
 			}
-
+// DOM Content Loaded
 			document.addEventListener('DOMContentLoaded', function() {
 // ICI Grenoble			
 				function fn_requestICI() {
