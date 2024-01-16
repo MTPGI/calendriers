@@ -14,6 +14,9 @@
 		}
 		#loading_infos{
 			margin: 40px;
+			padding: 20px;
+			background: #d3dcfd linear-gradient(45deg, #bbdcfd, #ecdbfd) fixed;
+			border-radius: 0.25em;	
 		}
 		#calendar {
 			max-width: 100vw;
@@ -62,7 +65,12 @@
 		</style>
 	</head>
 	<body>
-		<div id="loading_infos"></div>
+		<div id="loading_infos">
+		<p>En cas de message d'erreur répétés, cela signifie certainement que votre navigateur bloque les "requêtes multiorigines".</p>
+		<p>Si votre navigateur est basé sur Firefox, vous pouvez installer cet add-on : <a href="https://addons.mozilla.org/en-US/firefox/addon/cors-everywhere/" target="_blank">CORS Everywhere</a></p>
+		<p>Si votre navigateur est basé sur Chrome, vous pouvez installer cet add-on : <a href="https://chromewebstore.google.com/detail/allow-cors-access-control/lhobafahddgcelffkeicbaginigeejlf?hl=fr" target="_blank">Allow CORS</a></p>
+		
+		</div>
 		<div id="calendar"></div>
 		<script src="fullcalendar.js"></script>
 		<script>
